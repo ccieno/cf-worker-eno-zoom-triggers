@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Eno Solutions Triggers</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #f6f7fb; }
+    .wrap { max-width: 760px; margin: 48px auto; padding: 0 16px; }
+    .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    .top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 12px; gap: 12px; }
+    .title { font-size:18px; font-weight:700; }
+    .muted { color: #666; font-size: 13px; }
+    .status { font-size: 13px; color: #666; white-space: nowrap; }
+
+    .row { display: grid; grid-template-columns: 80px 160px 1fr; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid #eef0f4; }
+    .row:last-child { border-bottom: none; }
+    .name { font-weight: 600; }
+    .desc { color: #555; font-size: 14px; }
+    .value-box {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d9dde6;
+      background: #f9fafc;
+      color: #222;
+      min-height: 20px;
+    }
+    .err { color: #b00020; font-size: 13px; margin-top: 10px; white-space: pre-wrap; }
+
+    .switch { position: relative; display: inline-block; width: 52px; height: 30px; }
+    .switch input { display:none; }
+    .slider {
+      position:absolute; cursor:pointer; inset:0;
+      background:#e74c3c; transition:.2s; border-radius: 999px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+    }
+    .slider:before{
+      position:absolute; content:""; height: 24px; width: 24px; left:3px; top:3px;
+      background:white; transition:.2s; border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    }
+    input:checked + .slider { background:#2ecc71; }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #d9dde6; background: #fff; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <div class="title">Eno Solutions Triggers</div>
+          <div class="muted">Zoom Contact Center custom variables</div>
+        </div>
+        <div class="status" id="status">Loading…</div>
+      </div>
+
+      <div class="row">
+        <div id="sw-holiday"></div>
+        <div class="name">holiday</div>
+        <div class="desc">Holiday routing mode</div>
+      </div>
+
+      <div class="row">
+        <div id="sw-open"></div>
+        <div class="name">open</div>
+        <div class="desc">Open/closed toggle</div>
+      </div>
+
+      <div class="row">
+        <div id="sw-vip"></div>
+        <div class="name">vip</div>
+        <div class="desc">VIP handling enabled</div>
+      </div>
+
+      <div class="row" style="grid-template-columns: 80px 160px 1fr;">
+        <div></div>
+        <div class="name">flowVertical</div>
+        <div>
+          <select id="dd-flowVertical"></select>
+          <div class="muted" style="margin-top:6px;">Select which vertical flow should be active</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div></div>
+        <div class="name">Time Period</div>
+        <div>
+          <div class="value-box" id="ro-timePeriod"></div>
+          <div class="muted" style="margin-top:6px;">Read-only, based on current London time</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div></div>
+        <div class="name">Day</div>
+        <div>
+          <div class="value-box" id="ro-day"></div>
+          <div class="muted" style="margin-top:6px;">Read-only, based on current London day</div>
+        </div>
+      </div>
+
+      <div class="err" id="err"></div>
+    </div>
+  </div>
+
+<script>
+  // ============================================================
+  // CHANGE THESE TWO VALUES
+  // ============================================================
+  const WORKER_BASE_URL = "https://eno-zoom-triggers.github-b13.workers.dev";
+  // 2) Must match the ADMIN_TOKEN secret in your Worker (recommended)
+  // If you removed ADMIN_TOKEN protection from the Worker, leave this as ""
+  const ADMIN_TOKEN = "CSTSyHD7vwNKxj9ZvaSk0Vr8GBl8rlqAw";
+  // ============================================================
+
+  function apiHeaders() {
+    const h = { "Content-Type": "application/json" };
+    if (ADMIN_TOKEN) h["X-Admin-Token"] = ADMIN_TOKEN;
+    return h;
+  }
+
+  function mkSwitch(checked, onChange) {
+    const label = document.createElement("label");
+    label.className = "switch";
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = !!checked;
+    input.addEventListener("change", () => onChange(input.checked));
+
+    const span = document.createElement("span");
+    span.className = "slider";
+
+    label.appendChild(input);
+    label.appendChild(span);
+
+    return { label, input };
+  }
+
+  const statusEl = document.getElementById("status");
+  const errEl = document.getElementById("err");
+  const dd = document.getElementById("dd-flowVertical");
+  const timePeriodEl = document.getElementById("ro-timePeriod");
+  const dayEl = document.getElementById("ro-day");
+
+  const controls = {
+    holiday: null,
+    open: null,
+    vip: null,
+    flowVertical: dd
+  };
+
+  let busy = false;
+  let pollHandle = null;
+
+  function setControlsEnabled(enabled) {
+    if (controls.holiday) controls.holiday.disabled = !enabled;
+    if (controls.open) controls.open.disabled = !enabled;
+    if (controls.vip) controls.vip.disabled = !enabled;
+    if (controls.flowVertical) controls.flowVertical.disabled = !enabled;
+  }
+
+  function applyActualToUI(name, actual) {
+    if (["holiday", "open", "vip"].includes(name)) {
+      const el = controls[name];
+      if (el) el.checked = !!actual;
+      return;
+    }
+
+    if (name === "flowVertical") {
+      if (controls.flowVertical) controls.flowVertical.value = actual || "";
+    }
+  }
+
+  function renderReadOnly(values) {
+    timePeriodEl.textContent = values.timePeriod || "";
+    dayEl.textContent = values.day || "";
+  }
+
+  async function load(showStatus = true) {
+    errEl.textContent = "";
+    if (showStatus) statusEl.textContent = "Loading…";
+
+    const resp = await fetch(`${WORKER_BASE_URL}/variables`, { headers: apiHeaders() });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) throw new Error(data.error || `Failed to load (${resp.status})`);
+
+    const v = data.values || {};
+
+    const swHoliday = mkSwitch(v.holiday, (val) => updateVar("holiday", val));
+    controls.holiday = swHoliday.input;
+    document.getElementById("sw-holiday").replaceChildren(swHoliday.label);
+
+    const swOpen = mkSwitch(v.open, (val) => updateVar("open", val));
+    controls.open = swOpen.input;
+    document.getElementById("sw-open").replaceChildren(swOpen.label);
+
+    const swVip = mkSwitch(v.vip, (val) => updateVar("vip", val));
+    controls.vip = swVip.input;
+    document.getElementById("sw-vip").replaceChildren(swVip.label);
+
+    dd.replaceChildren();
+    const opts = data.dropdownOptions || [];
+    for (const o of opts) {
+      const opt = document.createElement("option");
+      opt.value = (o === "Please select...") ? "" : o;
+      opt.textContent = o;
+      dd.appendChild(opt);
+    }
+
+    dd.value = v.flowVertical || "";
+    dd.onchange = () => updateVar("flowVertical", dd.value);
+
+    renderReadOnly(v);
+
+    if (showStatus) statusEl.textContent = "Synced";
+  }
+
+  async function updateVar(name, value) {
+    if (busy) return;
+    busy = true;
+
+    errEl.textContent = "";
+    statusEl.textContent = "Updating…";
+    setControlsEnabled(false);
+
+    try {
+      const resp = await fetch(`${WORKER_BASE_URL}/variables/${encodeURIComponent(name)}`, {
+        method: "PATCH",
+        headers: apiHeaders(),
+        body: JSON.stringify({ value })
+      });
+
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) throw new Error(data.error || `Update failed (${resp.status})`);
+
+      const actual = data.actual;
+      applyActualToUI(name, actual);
+
+      if (actual !== value) {
+        statusEl.textContent = "Updated (adjusted)";
+        errEl.textContent =
+          `Note: Zoom returned a different stored value.\n` +
+          `Requested: ${JSON.stringify(value)}\n` +
+          `Actual: ${JSON.stringify(actual)}`;
+      } else {
+        statusEl.textContent = "Updated";
+      }
+
+      // Refresh read-only values too, in case the minute/day boundary changed
+      try { await load(false); } catch {}
+
+    } catch (e) {
+      statusEl.textContent = "Error";
+      errEl.textContent = String(e.message || e);
+
+      try { await load(false); } catch {}
+    } finally {
+      setControlsEnabled(true);
+      busy = false;
+    }
+  }
+
+  function startPolling() {
+    if (pollHandle) clearInterval(pollHandle);
+
+    // refresh every 60s so Time Period / Day stay current on the page
+    pollHandle = setInterval(async () => {
+      if (busy) return;
+      try {
+        await load(false);
+      } catch (_) {}
+    }, 60000);
+  }
+
+  load()
+    .then(() => startPolling())
+    .catch(e => {
+      statusEl.textContent = "Error";
+      errEl.textContent = String(e.message || e);
+    });
+</script>
+</body>
+</html>

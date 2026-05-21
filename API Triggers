@@ -1,0 +1,52 @@
+Postman Outh2
+
+Account ID: s8XXS5_CSU2JE2VTD3YOCw
+Client ID: btu7fTsrQkVrYLA6uzA1A
+Client Secret: 7byjFobJERakjbffxOG2Bj7d0y81MB95
+Admin Token: CSTSyHD7vwNKxj9ZvaSk0Vr8GBl8rlqAw
+
+URL: https://eno-zoom-triggers.github-b13.workers.dev
+
+*Overview*
+I want to create a webpage with some simple toggle switches to visualise the current status of some boolean variable being true or false, with the ability for the site visitor to trigger these switches.  Another variable is a string, I'd like the ability to see the current status of this string, and the option to change the value using a dropdown menu. 
+I dont know if some kind of application needs to be written to sit behind the webpage or not 
+*Platform*
+I am using a simple webserver to host the page, all API work will be using the Zoom platform.
+Resources: https://developers.zoom.us/
+the intended hosting URL for this webpage will be at https://api.eno.solutions/zoom/
+*Authentication*
+Ideally they would not need to authenticate, but if they do, then a popup box to the platform should pop up.  I have full admin access to my zoom account and can create a dedicated account for accesing the APIs if useful.  I don't know how to create tokens so this authentication needs to be part of the solution.  Authentication needs to be as simple as possible, ideally a one time thing or possibly a token that refreshes every time I visit the page.
+
+*Hosting*
+I already have the web server in place.  I just need the HTML file.
+*Styling*
+Nothing too fancy. think a central list away from any borders using the format:
+ToggleSwitch - Name of Variable - Description
+The toggle switch should be similar to iOS toggle swtiches, using green if true or red if false
+*Data*
+The data I want to manipulate is contact centre variables.  They all exist in the custom variable group "Eno Solutions Triggers"
+name: holiday
+default value: false
+type: boolean
+selection type: toggle switch
+-
+name: open
+default value: true
+type: boolean
+selection type: toggle switch
+-
+name: vip
+default value: false
+type: boolean
+selection type: toggle switch
+-
+name: flowVertical
+default value: retail
+type: string
+selection type: dropdown
+dropdown options: "retail", "insurance", "finance", "hotel", "restaurant", "automotive", "spa", "Please select..."
+
+*Notes*
+Before you return any solution, plesae check that any modules / imports are up to date and will work.  Any dependencies should be highlighted, factored in to the solution and solved before presenting back any work for me to do.   
+
+Plesae provide the full solution along with a step by step guide of what supplementary details or tasks are required to make this work.
