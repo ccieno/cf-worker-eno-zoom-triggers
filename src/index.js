@@ -28,7 +28,7 @@
 const MAIN_GROUP_NAME = "Eno Solutions Triggers";
 const EDITABLE_VARS = ["holiday", "open", "vip", "flowVertical"];
 const DROPDOWN = ["retail","insurance","finance","legal","hotel","restaurant","sales","customer service",
-  "automotive","spa","NHS","Please select..."];
+  "automotive","spa","NHS","BOT TEST FLOW","Please select..."];
 
 const WEBLEADS_ADDRESS_BOOK_NAME = "webleads";
 
