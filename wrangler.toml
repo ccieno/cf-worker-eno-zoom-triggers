@@ -1,10 +1,12 @@
 name = "eno-zoom-triggers"
 main = "src/index.js"
 compatibility_date = "2026-01-12"
+
+# Routes — must be BEFORE [vars] or TOML will treat them as variables
+routes = [
+  { pattern = "app.eno.solutions/zoom/api/*",     zone_name = "eno.solutions" },
+  { pattern = "app.eno.solutions/address-books/*", zone_name = "eno.solutions" }
+]
+
 [vars]
 ALLOW_ORIGIN = "https://app.eno.solutions"
-
-# Optional: if you use a custom domain on Cloudflare later, add routes here.
-routes = [
-  { pattern = "api.eno.solutions/zoom/api/*", zone_name = "eno.solutions" }
-]

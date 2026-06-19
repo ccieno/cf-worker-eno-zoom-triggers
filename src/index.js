@@ -22,7 +22,7 @@
  *  - ZOOM_VARIABLE_GROUP_ID   (for Eno Solutions Triggers group)
  *
  * Optional vars:
- *  - ALLOW_ORIGIN             e.g. "https://api.eno.solutions"
+ *  - ALLOW_ORIGIN             e.g. "https://app.eno.solutions"
  */
 
 const MAIN_GROUP_NAME = "Eno Solutions Triggers";
@@ -432,7 +432,7 @@ export default {
     }
 
     const url = new URL(request.url);
-    // Strip /zoom/api prefix so routes match when served via api.eno.solutions/zoom/api/*
+    // Strip /zoom/api prefix so routes match when served via app.eno.solutions/zoom/api/*
     const pathname = url.pathname.replace(/^\/zoom\/api/, '') || '/';
 
     try {

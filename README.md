@@ -2,9 +2,11 @@
 
 A Cloudflare Worker acting as a secure proxy for managing Zoom Contact Centre global variables and address book contacts. Used to control live demo behaviour (open/closed, holiday mode, flow vertical) without needing ZCC admin access.
 
-**Deployed at:** `api.eno.solutions/zoom/api/*`
+**Deployed at:** `app.eno.solutions/zoom/api/*` and `app.eno.solutions/address-books/*`
 
-The browser UI for this worker is served from `app.eno.solutions/triggers`.
+The browser UI is served from `app.eno.solutions/triggers`, protected by Google SSO via Cloudflare Access.
+
+> **Note on Cloudflare Access + API calls:** Both the UI and API routes are under `app.eno.solutions`, so CF Access cookies are forwarded automatically by the browser. Write endpoints are additionally protected by the `X-Admin-Token` header.
 
 ## Routes
 
