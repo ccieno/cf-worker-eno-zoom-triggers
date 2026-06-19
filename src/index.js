@@ -448,21 +448,21 @@ export default {
       }
 
       // GET /debug/units
-      if (request.method === "GET" && url.pathname === "/debug/units") {
+      if (request.method === "GET" && pathname === "/debug/units") {
         const token = await getAccessToken(env);
         const units = await zoomFetch(token, "/contact_center/address_books/units?page_size=50");
         return json(units, { origin, allowOriginEnv });
       }
 
       // GET /debug/address-books
-      if (request.method === "GET" && url.pathname === "/debug/address-books") {
+      if (request.method === "GET" && pathname === "/debug/address-books") {
         const token = await getAccessToken(env);
         const books = await listAddressBooks(token, env);
         return json(books, { origin, allowOriginEnv });
       }
 
       // GET /debug/webleads
-      if (request.method === "GET" && url.pathname === "/debug/webleads") {
+      if (request.method === "GET" && pathname === "/debug/webleads") {
         const token = await getAccessToken(env);
         const id = await getWebleadsAddressBookId(token, env);
         return json(
@@ -476,7 +476,7 @@ export default {
       }
 
       // GET /variables
-      if (request.method === "GET" && url.pathname === "/variables") {
+      if (request.method === "GET" && pathname === "/variables") {
         const token = await getAccessToken(env);
         const ids = await discoverEditableIds(token, env);
 
@@ -504,7 +504,7 @@ export default {
       }
 
       // PATCH /variables/:name  (editable vars only)
-      const m = url.pathname.match(/^\/variables\/([^/]+)$/);
+      const m = pathname.match(/^\/variables\/([^/]+)$/);
       if (request.method === "PATCH" && m) {
         const name = decodeURIComponent(m[1]);
 
