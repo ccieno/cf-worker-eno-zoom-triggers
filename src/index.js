@@ -432,10 +432,12 @@ export default {
     }
 
     const url = new URL(request.url);
+    // Strip /zoom/api prefix so routes match when served via api.eno.solutions/zoom/api/*
+    const pathname = url.pathname.replace(/^\/zoom\/api/, '') || '/';
 
     try {
       // POST /address-books/webleads/contacts
-      if (request.method === "POST" && url.pathname === "/address-books/webleads/contacts") {
+      if (request.method === "POST" && pathname === "/address-books/webleads/contacts") {
         const body = await request.json().catch(() => ({}));
         const token = await getAccessToken(env);
         const created = await createWebLeadContact(token, env, body);

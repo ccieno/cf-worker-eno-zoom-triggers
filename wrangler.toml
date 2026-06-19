@@ -2,7 +2,7 @@ name = "eno-zoom-triggers"
 main = "src/index.js"
 compatibility_date = "2026-01-12"
 [vars]
-ALLOW_ORIGIN = "https://api.eno.solutions"
+ALLOW_ORIGIN = "https://app.eno.solutions"
 
 # Optional: if you use a custom domain on Cloudflare later, add routes here.
 routes = [
