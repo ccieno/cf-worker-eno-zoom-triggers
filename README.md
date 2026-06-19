@@ -29,7 +29,7 @@ CORS is locked to `https://app.eno.solutions`.
 |---|---|---|
 | `holiday` | boolean | Puts the contact centre into holiday mode |
 | `open` | boolean | Overrides open/closed state |
-| `vip` | boolean | Flags the next caller as VIP |
+| `vip` | boolean | Bot skip — bypasses the virtual agent bot for the next caller |
 | `flowVertical` | dropdown | Sets the industry vertical for the demo flow |
 
 ## How it works
