@@ -4,7 +4,7 @@ A Cloudflare Worker acting as a secure proxy for managing Zoom Contact Centre gl
 
 **Deployed at:** `app.eno.solutions/zoom/api/*` and `app.eno.solutions/address-books/*`
 
-The browser UI is served from `app.eno.solutions/triggers`, protected by Google SSO via Cloudflare Access.
+The browser UI (`index.html`) is served from `app.eno.solutions/triggers`, protected by Google SSO via Cloudflare Access. The UI design matches the [Eno Solutions app](https://app.eno.solutions/) — light grey background, white rounded card, blue-on-light pill tags, and colour-coded status indicator.
 
 > **Note on Cloudflare Access + API calls:** Both the UI and API routes are under `app.eno.solutions`, so CF Access cookies are forwarded automatically by the browser. Write endpoints are additionally protected by the `X-Admin-Token` header.
 

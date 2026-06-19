@@ -3,118 +3,278 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Eno Solutions Triggers</title>
+  <title>Eno Solutions – Triggers</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #f6f7fb; }
-    .wrap { max-width: 760px; margin: 48px auto; padding: 0 16px; }
-    .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
-    .top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 12px; gap: 12px; }
-    .title { font-size:18px; font-weight:700; }
-    .muted { color: #666; font-size: 13px; }
-    .status { font-size: 13px; color: #666; white-space: nowrap; }
+    *, *::before, *::after { box-sizing: border-box; }
 
-    .row { display: grid; grid-template-columns: 80px 160px 1fr; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid #eef0f4; }
-    .row:last-child { border-bottom: none; }
-    .name { font-weight: 600; }
-    .desc { color: #555; font-size: 14px; }
-    .value-box {
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid #d9dde6;
-      background: #f9fafc;
-      color: #222;
-      min-height: 20px;
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      margin: 0;
+      background: #eaecf2;
+      color: #1a1d23;
+      min-height: 100vh;
     }
-    .err { color: #b00020; font-size: 13px; margin-top: 10px; white-space: pre-wrap; }
 
-    .switch { position: relative; display: inline-block; width: 52px; height: 30px; }
-    .switch input { display:none; }
+    /* ── Header ── */
+    .page-header {
+      text-align: center;
+      padding: 48px 16px 32px;
+    }
+    .page-header h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .page-header p {
+      margin: 0;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    /* ── Main card ── */
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.05);
+      max-width: 680px;
+      margin: 0 auto 32px;
+      padding: 0 0 4px;
+      overflow: hidden;
+    }
+
+    /* ── Card header ── */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #f0f1f5;
+    }
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .card-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #2563eb;
+      background: #eff6ff;
+      border-radius: 999px;
+      padding: 2px 9px;
+    }
+    .status-pill {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      background: #f3f4f6;
+      border-radius: 999px;
+      padding: 4px 12px;
+      transition: background .2s, color .2s;
+    }
+    .status-pill.ok   { color: #16a34a; background: #f0fdf4; }
+    .status-pill.busy { color: #d97706; background: #fffbeb; }
+    .status-pill.err  { color: #dc2626; background: #fef2f2; }
+
+    /* ── Rows ── */
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 24px;
+      border-bottom: 1px solid #f0f1f5;
+    }
+    .row:last-of-type { border-bottom: none; }
+
+    .row-control { flex: 0 0 52px; }
+
+    .row-label {
+      flex: 0 0 130px;
+    }
+    .row-label strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .row-body { flex: 1; }
+    .row-desc {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    /* ── Toggle switch ── */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+    }
+    .switch input { display: none; }
     .slider {
-      position:absolute; cursor:pointer; inset:0;
-      background:#e74c3c; transition:.2s; border-radius: 999px;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      background: #d1d5db;
+      border-radius: 999px;
+      transition: background .2s;
     }
-    .slider:before{
-      position:absolute; content:""; height: 24px; width: 24px; left:3px; top:3px;
-      background:white; transition:.2s; border-radius: 50%;
-      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,.20);
+      transition: transform .2s;
     }
-    input:checked + .slider { background:#2ecc71; }
-    input:checked + .slider:before { transform: translateX(22px); }
+    input:checked + .slider { background: #2563eb; }
+    input:checked + .slider::before { transform: translateX(20px); }
+    input:disabled + .slider { opacity: .5; cursor: not-allowed; }
 
-    select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #d9dde6; background: #fff; }
+    /* ── Dropdown ── */
+    select {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 9px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: 14px;
+      color: #1a1d23;
+      outline: none;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    select:focus { border-color: #2563eb; background: #fff; }
+    select:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── Read-only value ── */
+    .value-box {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 9px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: 14px;
+      color: #374151;
+      min-width: 120px;
+    }
+
+    /* ── Error banner ── */
+    .err-banner {
+      margin: 0 24px 16px;
+      padding: 10px 14px;
+      border-radius: 9px;
+      background: #fef2f2;
+      color: #dc2626;
+      font-size: 13px;
+      white-space: pre-wrap;
+      display: none;
+    }
+    .err-banner.visible { display: block; }
+
+    .wrap { padding: 0 16px; }
   </style>
 </head>
 
 <body>
+  <header class="page-header">
+    <h1>Eno Solutions</h1>
+    <p>Zoom Contact Center configuration</p>
+  </header>
+
   <div class="wrap">
     <div class="card">
-      <div class="top">
-        <div>
-          <div class="title">Eno Solutions Triggers</div>
-          <div class="muted">Zoom Contact Center custom variables</div>
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-icon">⚡</span>
+          <div>
+            <div class="card-title">Triggers</div>
+            <span class="card-tag">ZCC Variables</span>
+          </div>
         </div>
-        <div class="status" id="status">Loading…</div>
+        <span class="status-pill" id="status">Loading…</span>
       </div>
 
+      <!-- Holiday -->
       <div class="row">
-        <div id="sw-holiday"></div>
-        <div class="name">holiday</div>
-        <div class="desc">Holiday routing mode</div>
+        <div class="row-control" id="sw-holiday"></div>
+        <div class="row-label"><strong>holiday</strong></div>
+        <div class="row-body">
+          <div class="row-desc">Holiday routing mode</div>
+        </div>
       </div>
 
+      <!-- Open -->
       <div class="row">
-        <div id="sw-open"></div>
-        <div class="name">open</div>
-        <div class="desc">Open/closed toggle</div>
+        <div class="row-control" id="sw-open"></div>
+        <div class="row-label"><strong>open</strong></div>
+        <div class="row-body">
+          <div class="row-desc">Open / closed toggle</div>
+        </div>
       </div>
 
+      <!-- Bot Skip -->
       <div class="row">
-        <div id="sw-vip"></div>
-        <div class="name">Bot Skip</div>
-        <div class="desc">bot skip enabled</div>
+        <div class="row-control" id="sw-vip"></div>
+        <div class="row-label"><strong>Bot Skip</strong></div>
+        <div class="row-body">
+          <div class="row-desc">Bot skip enabled</div>
+        </div>
       </div>
 
-      <div class="row" style="grid-template-columns: 80px 160px 1fr;">
-        <div></div>
-        <div class="name">flowVertical</div>
-        <div>
+      <!-- flowVertical -->
+      <div class="row">
+        <div class="row-control"></div>
+        <div class="row-label"><strong>flowVertical</strong></div>
+        <div class="row-body">
           <select id="dd-flowVertical"></select>
-          <div class="muted" style="margin-top:6px;">Select which vertical flow should be active</div>
+          <div class="row-desc" style="margin-top:6px;">Select which vertical flow should be active</div>
         </div>
       </div>
 
+      <!-- Time Period (read-only) -->
       <div class="row">
-        <div></div>
-        <div class="name">Time Period</div>
-        <div>
-          <div class="value-box" id="ro-timePeriod"></div>
-          <div class="muted" style="margin-top:6px;">Read-only, based on current London time</div>
+        <div class="row-control"></div>
+        <div class="row-label"><strong>Time Period</strong></div>
+        <div class="row-body">
+          <span class="value-box" id="ro-timePeriod">—</span>
+          <div class="row-desc" style="margin-top:6px;">Read-only · current London time</div>
         </div>
       </div>
 
+      <!-- Day (read-only) -->
       <div class="row">
-        <div></div>
-        <div class="name">Day</div>
-        <div>
-          <div class="value-box" id="ro-day"></div>
-          <div class="muted" style="margin-top:6px;">Read-only, based on current London day</div>
+        <div class="row-control"></div>
+        <div class="row-label"><strong>Day</strong></div>
+        <div class="row-body">
+          <span class="value-box" id="ro-day">—</span>
+          <div class="row-desc" style="margin-top:6px;">Read-only · current London day</div>
         </div>
       </div>
 
-      <div class="err" id="err"></div>
+      <div class="err-banner" id="err"></div>
     </div>
   </div>
 
 <script>
-  // ============================================================
-  // CHANGE THESE TWO VALUES
-  // ============================================================
   const WORKER_BASE_URL = "https://api.eno.solutions/zoom/api";
-  // 2) Must match the ADMIN_TOKEN secret in your Worker (recommended)
-  // If you removed ADMIN_TOKEN protection from the Worker, leave this as ""
   const ADMIN_TOKEN = "CSTSyHD7vwNKxj9ZvaSk0Vr8GBl8rlqAw";
-  // ============================================================
 
   function apiHeaders() {
     const h = { "Content-Type": "application/json" };
@@ -122,67 +282,56 @@
     return h;
   }
 
+  function setStatus(text, type = "") {
+    const el = document.getElementById("status");
+    el.textContent = text;
+    el.className = "status-pill" + (type ? " " + type : "");
+  }
+
   function mkSwitch(checked, onChange) {
     const label = document.createElement("label");
     label.className = "switch";
-
     const input = document.createElement("input");
     input.type = "checkbox";
     input.checked = !!checked;
     input.addEventListener("change", () => onChange(input.checked));
-
     const span = document.createElement("span");
     span.className = "slider";
-
     label.appendChild(input);
     label.appendChild(span);
-
     return { label, input };
   }
 
-  const statusEl = document.getElementById("status");
-  const errEl = document.getElementById("err");
   const dd = document.getElementById("dd-flowVertical");
   const timePeriodEl = document.getElementById("ro-timePeriod");
   const dayEl = document.getElementById("ro-day");
+  const errEl = document.getElementById("err");
 
-  const controls = {
-    holiday: null,
-    open: null,
-    vip: null,
-    flowVertical: dd
-  };
+  const controls = { holiday: null, open: null, vip: null, flowVertical: dd };
 
   let busy = false;
-  let pollHandle = null;
 
   function setControlsEnabled(enabled) {
-    if (controls.holiday) controls.holiday.disabled = !enabled;
-    if (controls.open) controls.open.disabled = !enabled;
-    if (controls.vip) controls.vip.disabled = !enabled;
+    ["holiday", "open", "vip"].forEach(k => { if (controls[k]) controls[k].disabled = !enabled; });
     if (controls.flowVertical) controls.flowVertical.disabled = !enabled;
   }
 
   function applyActualToUI(name, actual) {
     if (["holiday", "open", "vip"].includes(name)) {
-      const el = controls[name];
-      if (el) el.checked = !!actual;
-      return;
-    }
-
-    if (name === "flowVertical") {
+      if (controls[name]) controls[name].checked = !!actual;
+    } else if (name === "flowVertical") {
       if (controls.flowVertical) controls.flowVertical.value = actual || "";
     }
   }
 
-  function renderReadOnly(values) {
-    timePeriodEl.textContent = values.timePeriod || "";
-    dayEl.textContent = values.day || "";
+  function showErr(msg) {
+    errEl.textContent = msg;
+    errEl.classList.toggle("visible", !!msg);
   }
 
   async function load(showStatus = true) {
-    errEl.textContent = "";
-    if (showStatus) statusEl.textContent = "Loading…";
+    showErr("");
+    if (showStatus) setStatus("Loading…");
 
     const resp = await fetch(`${WORKER_BASE_URL}/variables`, { headers: apiHeaders() });
     const data = await resp.json().catch(() => ({}));
@@ -190,41 +339,39 @@
 
     const v = data.values || {};
 
-    const swHoliday = mkSwitch(v.holiday, (val) => updateVar("holiday", val));
+    const swHoliday = mkSwitch(v.holiday, val => updateVar("holiday", val));
     controls.holiday = swHoliday.input;
     document.getElementById("sw-holiday").replaceChildren(swHoliday.label);
 
-    const swOpen = mkSwitch(v.open, (val) => updateVar("open", val));
+    const swOpen = mkSwitch(v.open, val => updateVar("open", val));
     controls.open = swOpen.input;
     document.getElementById("sw-open").replaceChildren(swOpen.label);
 
-    const swVip = mkSwitch(v.vip, (val) => updateVar("vip", val));
+    const swVip = mkSwitch(v.vip, val => updateVar("vip", val));
     controls.vip = swVip.input;
     document.getElementById("sw-vip").replaceChildren(swVip.label);
 
     dd.replaceChildren();
-    const opts = data.dropdownOptions || [];
-    for (const o of opts) {
+    for (const o of (data.dropdownOptions || [])) {
       const opt = document.createElement("option");
       opt.value = (o === "Please select...") ? "" : o;
       opt.textContent = o;
       dd.appendChild(opt);
     }
-
     dd.value = v.flowVertical || "";
     dd.onchange = () => updateVar("flowVertical", dd.value);
 
-    renderReadOnly(v);
+    timePeriodEl.textContent = v.timePeriod || "—";
+    dayEl.textContent = v.day || "—";
 
-    if (showStatus) statusEl.textContent = "Synced";
+    if (showStatus) setStatus("Synced", "ok");
   }
 
   async function updateVar(name, value) {
     if (busy) return;
     busy = true;
-
-    errEl.textContent = "";
-    statusEl.textContent = "Updating…";
+    showErr("");
+    setStatus("Updating…", "busy");
     setControlsEnabled(false);
 
     try {
@@ -233,7 +380,6 @@
         headers: apiHeaders(),
         body: JSON.stringify({ value })
       });
-
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok) throw new Error(data.error || `Update failed (${resp.status})`);
 
@@ -241,22 +387,20 @@
       applyActualToUI(name, actual);
 
       if (actual !== value) {
-        statusEl.textContent = "Updated (adjusted)";
-        errEl.textContent =
+        setStatus("Updated (adjusted)", "busy");
+        showErr(
           `Note: Zoom returned a different stored value.\n` +
           `Requested: ${JSON.stringify(value)}\n` +
-          `Actual: ${JSON.stringify(actual)}`;
+          `Actual: ${JSON.stringify(actual)}`
+        );
       } else {
-        statusEl.textContent = "Updated";
+        setStatus("Updated", "ok");
       }
 
-      // Refresh read-only values too, in case the minute/day boundary changed
       try { await load(false); } catch {}
-
     } catch (e) {
-      statusEl.textContent = "Error";
-      errEl.textContent = String(e.message || e);
-
+      setStatus("Error", "err");
+      showErr(String(e.message || e));
       try { await load(false); } catch {}
     } finally {
       setControlsEnabled(true);
@@ -265,22 +409,17 @@
   }
 
   function startPolling() {
-    if (pollHandle) clearInterval(pollHandle);
-
-    // refresh every 60s so Time Period / Day stay current on the page
-    pollHandle = setInterval(async () => {
+    setInterval(async () => {
       if (busy) return;
-      try {
-        await load(false);
-      } catch (_) {}
+      try { await load(false); } catch {}
     }, 60000);
   }
 
   load()
     .then(() => startPolling())
     .catch(e => {
-      statusEl.textContent = "Error";
-      errEl.textContent = String(e.message || e);
+      setStatus("Error", "err");
+      showErr(String(e.message || e));
     });
 </script>
 </body>
